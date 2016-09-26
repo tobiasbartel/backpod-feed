@@ -17,6 +17,6 @@ class Command(BaseCommand):
         for one_podcast in Itunes.objects.all().order_by('-modified'):
             if DEBUG:
                 logger.info('Updating \'%s\'' % one_podcast)
-                import_feed_from_itunes(one_podcast.feed_url, one_podcast)
+                import_feed_from_itunes(one_podcast.feed_url, one_podcast.collection_id)
             else:
-                import_feed_from_itunes_task.delay(one_podcast.feed_url, one_podcast)
+                import_feed_from_itunes_task.delay(one_podcast.feed_url, one_podcast.collection_id)

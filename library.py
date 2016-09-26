@@ -6,6 +6,7 @@ import dateutil.parser
 import requests
 from pyPodcastParser.Podcast import Podcast
 
+from directory.models import Itunes
 from models import *
 
 
@@ -82,10 +83,11 @@ def handle_language(my_language):
     return db_language
 
 
-def import_feed_from_itunes(feed_url, itunes):
+def import_feed_from_itunes(feed_url, collectionId):
     pprint(feed_url)
     response = requests.get(feed_url)
     podcast = Podcast(response.content)
+    itunes_object = Itunes.objects.get(collection_id=collectionId)
 
     try:
         published_date = dateutil.parser.parse(podcast.published_date)
@@ -97,7 +99,8 @@ def import_feed_from_itunes(feed_url, itunes):
     except:
         last_build_date = None
 
-    my_feed, created = Feed.objects.get_or_create(url=feed_url, itunes_directory=itunes, itunes_id=itunes.collection_id)
+    my_feed, created = Feed.objects.get_or_create(url=feed_url, itunes_directory=itunes_object,
+                                                  itunes_id=itunes_object.collection_id)
     pprint(created)
     pprint(my_feed)
     pprint(podcast)
@@ -108,7 +111,7 @@ def import_feed_from_itunes(feed_url, itunes):
     my_feed.owner = handle_person(podcast.owner_name, podcast.owner_email, 'owner')
 
     my_feed.categories = handle_categories(podcast.categories)
-    my_feed.itunes_directory = itunes
+    my_feed.itunes_directory = itunes_object
     my_feed.copyright = podcast.copyright
     my_feed.creative_commons = podcast.creative_commons
     my_feed.description = podcast.description
