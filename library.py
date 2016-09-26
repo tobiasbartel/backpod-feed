@@ -83,11 +83,11 @@ def handle_language(my_language):
     return db_language
 
 
-def import_feed_from_itunes(feed_url, collectionId):
+def import_feed_from_itunes(feed_url, collection_id):
     pprint(feed_url)
     response = requests.get(feed_url)
     podcast = Podcast(response.content)
-    itunes_object = Itunes.objects.get(collection_id=collectionId)
+    itunes_object = Itunes.objects.get(collection_id=collection_id)
 
     try:
         published_date = dateutil.parser.parse(podcast.published_date)

@@ -19,4 +19,5 @@ class Command(BaseCommand):
                 logger.info('Updating \'%s\'' % one_podcast)
                 import_feed_from_itunes(one_podcast.feed_url, one_podcast.collection_id)
             else:
-                import_feed_from_itunes_task.delay(one_podcast.feed_url, one_podcast.collection_id)
+                import_feed_from_itunes_task.delay(feed_url=one_podcast.feed_url,
+                                                   collection_id=one_podcast.collection_id)
