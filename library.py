@@ -1,12 +1,12 @@
-from pyPodcastParser.Podcast import Podcast
-from pprint import pprint
-import requests
-from models import *
-import dateutil.parser
-import logging
-from datetime import datetime
 import hashlib
-logger = logging.getLogger(__name__)
+from datetime import datetime
+from pprint import pprint
+
+import dateutil.parser
+import requests
+from pyPodcastParser.Podcast import Podcast
+
+from models import *
 
 
 def handle_categories(my_categories):
@@ -35,7 +35,6 @@ def handle_itunes_keywords(my_keywords):
 
 def handle_person(my_name, my_mail_address=None, my_type=None):
     if my_type is None:
-        logger.error('Tried to create person without type (%s)' % my_name)
         return None
 
     if my_name is None:
@@ -97,11 +96,6 @@ def import_feed_from_itunes(feed_url, itunes):
         last_build_date = dateutil.parser.parse(podcast.last_build_date)
     except:
         last_build_date = None
-
-    try:
-        date_time = dateutil.parser.parse(podcast.date_time)
-    except:
-        date_time = None
 
     my_feed, created = Feed.objects.get_or_create(url=feed_url, itunes_directory=itunes, itunes_id=itunes.collection_id)
     pprint(created)
