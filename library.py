@@ -39,6 +39,7 @@ def handle_person(my_name, my_mail_address=None, my_type=None):
         return None
 
     if my_name is None:
+        my_name = ''
         my_lower_name = None
     else:
         my_name = my_name.strip()
@@ -51,7 +52,7 @@ def handle_person(my_name, my_mail_address=None, my_type=None):
     if my_type == 'owner':
         db_person, created = Person.objects.get_or_create(lower_name=my_lower_name, email=my_mail_address)
     else:
-        db_person, created = Person.objects.get_or_create(lower_name=my_lower_name)
+        db_person, created = Person.objects.get_or_create(lower_name=my_lower_name, email=None)
 
     if db_person.name != my_name:
         db_person.name = my_name
@@ -79,9 +80,11 @@ def handle_person(my_name, my_mail_address=None, my_type=None):
 
 
 def handle_language(my_language):
-    db_language, created = Language.objects.get_or_create(name=my_language)
-    return db_language
-
+    if my_language is not None:
+        db_language, created = Language.objects.get_or_create(name=my_language)
+        return db_language
+    else:
+        return None
 
 def import_feed_from_itunes(feed_url, collection_id):
     pprint(feed_url)
@@ -112,11 +115,16 @@ def import_feed_from_itunes(feed_url, collection_id):
 
     my_feed.categories = handle_categories(podcast.categories)
     my_feed.itunes_directory = itunes_object
-    my_feed.copyright = podcast.copyright
-    my_feed.creative_commons = podcast.creative_commons
-    my_feed.description = podcast.description
-    my_feed.generator = podcast.generator
-    my_feed.image_title = podcast.image_title
+    if podcast.copyright is not None:
+        my_feed.copyright = podcast.copyright.encode("UTF-8")
+    if podcast.creative_commons is not None:
+        my_feed.creative_commons = podcast.creative_commons.encode("UTF-8")
+    if podcast.description is not None:
+        my_feed.description = podcast.description.encode("UTF-8")
+    if podcast.generator is not None:
+        my_feed.generator = podcast.generator.encode("UTF-8")
+    if podcast.image_title is not None:
+        my_feed.image_title = podcast.image_title.encode("UTF-8")
     my_feed.image_url = podcast.image_url
     my_feed.image_link = podcast.image_link
     my_feed.itunes_author_name = handle_person(my_name=podcast.itunes_author_name, my_type='itunes_author')
@@ -133,8 +141,10 @@ def import_feed_from_itunes(feed_url, collection_id):
     my_feed.managing_editor = handle_person(my_name=podcast.managing_editor, my_type='managing_editor')
     my_feed.published_date = published_date
     my_feed.pubsubhubbub = podcast.pubsubhubbub
-    my_feed.subtitle = podcast.subtitle
-    my_feed.title = podcast.title
+    if podcast.subtitle is not None:
+        my_feed.subtitle = podcast.subtitle.encode("UTF-8")
+    if podcast.title is not None:
+        my_feed.title = podcast.title.encode("UTF-8")
     if my_feed.ttl is not None:
         my_feed.ttl = int(podcast.ttl)
     my_feed.web_master = handle_person(my_name=podcast.web_master, my_type='webmaster')
@@ -160,8 +170,10 @@ def import_feed_item(my_feed, my_item):
 
     my_item.author = handle_person(my_name=my_item.author, my_type='author')
     my_feed_item.comments = my_item.comments
-    my_feed_item.creative_commons = my_item.creative_commons
-    my_feed_item.description = my_item.description
+    if my_item.creative_commons is not None:
+        my_feed_item.creative_commons = my_item.creative_commons.encode("UTF-8")
+    if my_item.description is not None:
+        my_feed_item.description = my_item.description.encode("UTF-8")
     my_feed_item.enclosure_url = my_item.enclosure_url
     my_feed_item.enclosure_type = my_item.enclosure_type
     my_feed_item.enclosure_length= my_item.enclosure_length
@@ -170,12 +182,16 @@ def import_feed_item(my_feed, my_item):
     my_feed_item.itunes_block = my_item.itunes_block
     my_feed_item.itunes_closed_captioned = my_item.itunes_closed_captioned
     my_feed_item.itunes_duration = my_item.itunes_duration
-    my_feed_item.itunes_explicit = my_item.itunes_explicit
+    if my_item.itunes_explicit is not None:
+        my_feed_item.itunes_explicit = my_item.itunes_explicit.encode("UTF-8")
     my_feed_item.itunes_image = my_item.itune_image
     my_feed_item.itunes_order = my_item.itunes_order
-    my_feed_item.itunes_subtitle = my_item.itunes_subtitle
-    my_feed_item.itunes_summary = my_item.itunes_summary
+    if my_item.itunes_subtitle is not None:
+        my_feed_item.itunes_subtitle = my_item.itunes_subtitle.encode("UTF-8")
+    if my_item.itunes_summary is not None:
+        my_feed_item.itunes_summary = my_item.itunes_summary.encode("UTF-8")
     my_feed_item.link = my_item.link
-    my_feed_item.title = my_item.title
+    if my_item.title is not None:
+        my_feed_item.title = my_item.title.encode("UTF-8")
     my_feed_item.time_published = my_published_date
     my_feed_item.save()

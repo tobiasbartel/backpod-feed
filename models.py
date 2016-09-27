@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
 from django.db import models
 import logging
 logger = logging.getLogger(__name__)
-
 
 
 class Category(models.Model):
@@ -38,7 +38,6 @@ class Itunes_keyword(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.title
-
 
 class Person(models.Model):
     name = models.CharField(max_length=250, db_index=True, blank=True, null=True)
